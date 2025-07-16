@@ -13,18 +13,23 @@ st.set_page_config(page_title="Disease Prediction", layout="centered")
 st.title(" Disease Prediction App")
 st.markdown("Choose a model, enter patient data, and get predictions.")
 
-# Select model
-model_options = ["Random Forest", "Logistic Regression", "Support Vector Machine", "XGBoost"]
-model_choice = st.sidebar.selectbox("Select ML Model", model_options)
+# Dropdown options mapped to filenames
+model_files = {
+    "Logistic_Regression": "logistic_model.pkl",
+    "Support_Vector_Machine": "svm_model.pkl",
+    "Random_Forest": "rf_model.pkl",
+    "XGBoost": "xgb_model.pkl"
+}
 
-# Load selected model
-model_path = f"{model_choice}.pkl"
-if os.path.exists(model_path):
-    with open(model_path, "rb") as f:
-        model = pickle.load(f)
-else:
-    st.error(f"Model file '{model_path}' not found.")
-    st.stop()
+# Streamlit dropdown
+selected_model_name = st.selectbox("Select ML Model", list(model_files.keys()))
+
+# Get actual file name from dictionary
+model_filename = model_files[selected_model_name]
+
+# Load model
+with open(model_filename, 'rb') as f:
+
 
 # Input fields dynamically from feature names
 st.sidebar.header("Enter Patient Data")
