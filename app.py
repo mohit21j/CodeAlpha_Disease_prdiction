@@ -35,19 +35,28 @@ for feature in feature_names:
     val = st.sidebar.number_input(f"{feature}", min_value=0.0, format="%.2f")
     user_input.append(val)
 
+
+# Load the scaler
+with open("scaler.pkl", "rb") as f:
+    scaler = pickle.load(f)
+
 # Predict button
 if st.button("Predict"):
     input_data = np.array([user_input])
-    prediction = model.predict(input_data)[0]
+    input_scaled = scaler.transform(input_data)  # Apply scaling
 
-    # Use predict_proba only if available
+    prediction = model.predict(input_scaled)[0]
+
+    # Use predict_proba if available
     if hasattr(model, "predict_proba"):
-        probability = model.predict_proba(input_data)[0][int(prediction)]
+        probability = model.predict_proba(input_scaled)[0][int(prediction)]
     else:
-        probability = 1.0  # fallback for models that don't support predict_proba
+        probability = 1.0
 
     if prediction == 1:
         st.error(f" Disease Detected! ({probability*100:.2f}% confidence)")
     else:
         st.success(f" No Disease Detected ({probability*100:.2f}% confidence)")
+
+
 
